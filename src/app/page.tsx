@@ -7,9 +7,7 @@ import Link from "next/link";
 import * as Icons from "lucide-react";
 
 export default async function Home() {
-  const categories = await db.serviceCategory.findMany({
-    take: 12,
-  });
+  const categories = await db.serviceCategory.findMany();
 
   return (
     <main className="min-h-screen bg-slate-950 text-white">

@@ -8,13 +8,17 @@ interface SearchPageProps {
     searchParams: Promise<{
         q?: string;
         category?: string;
+        lat?: string;
+        lng?: string;
     }>;
 }
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
-    const { q, category } = await searchParams;
+    const { q, category, lat, lng } = await searchParams;
     const query = q || "";
     const categorySlug = category || "";
+    const userLat = lat ? parseFloat(lat) : undefined;
+    const userLng = lng ? parseFloat(lng) : undefined;
 
     // Fetch providers with filters
     const providers = await db.providerProfile.findMany({
@@ -53,6 +57,38 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     });
 
     const categories = await db.serviceCategory.findMany();
+
+    // Advanced Ranking Algorithm: Priority 1 (Premium Tier), Priority 2 (Distance), Priority 3 (Stars)
+    // Formula Haversine implementation
+    const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+        const p = 0.017453292519943295;
+        const c = Math.cos;
+        const a = 0.5 - c((lat2 - lat1) * p) / 2 +
+            c(lat1 * p) * c(lat2 * p) *
+            (1 - c((lon2 - lon1) * p)) / 2;
+        return 12742 * Math.asin(Math.sqrt(a)); // 2 * R; R = 6371 km
+    };
+
+    const tierPriority: Record<string, number> = { PRO: 3, BASIC: 2, NONE: 1 };
+
+    providers.sort((a: any, b: any) => {
+        // Priority 1: Subscription Tier (PRO > BASIC > NONE) // Los VIP van primero
+        const tierDiff = (tierPriority[b.subscriptionTier] || 1) - (tierPriority[a.subscriptionTier] || 1);
+        if (tierDiff !== 0) return tierDiff;
+
+        // Priority 2: Geographic Proximity (if location provided) // Los mas cerca
+        if (userLat !== undefined && userLng !== undefined && a.latitude && a.longitude && b.latitude && b.longitude) {
+            const distA = getDistance(userLat, userLng, a.latitude, a.longitude);
+            const distB = getDistance(userLat, userLng, b.latitude, b.longitude);
+            // If the difference in distance is significant (e.g., > 15 km), prioritize distance over stars
+            if (Math.abs(distA - distB) > 15) {
+                return distA - distB;
+            }
+        }
+
+        // Priority 3: Ratings // Los mejor calificados
+        return b.rating - a.rating;
+    });
 
     return (
         <main className="min-h-screen bg-slate-50">

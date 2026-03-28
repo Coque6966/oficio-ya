@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Upload, CheckCircle2, ShieldCheck, ArrowRight, Loader2 } from "lucide-react";
+import { Upload, CheckCircle2, ShieldCheck, ArrowRight, Loader2, FileCheck } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import axios from "axios";
@@ -15,6 +15,7 @@ import axios from "axios";
 export default function ProviderOnboardingPage() {
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
+    const [idFile, setIdFile] = useState<File | null>(null);
     const [formData, setFormData] = useState({
         bio: "",
         hourlyRate: "",
@@ -39,6 +40,10 @@ export default function ProviderOnboardingPage() {
     };
 
     const nextStep = () => {
+        if (step === 2 && !idFile) {
+            toast.error("Seguridad: Es OBLIGATORIO anexar tu Identificación Oficial para continuar.");
+            return;
+        }
         if (step < 3) setStep(step + 1);
         else onSubmit();
     };
@@ -108,11 +113,27 @@ export default function ProviderOnboardingPage() {
 
                         {step === 2 && (
                             <div className="space-y-6">
-                                <div className="border-2 border-dashed border-white/10 rounded-2xl p-12 text-center hover:bg-white/5 transition-colors cursor-pointer flex flex-col items-center">
-                                    <Upload className="w-12 h-12 text-blue-500 mb-4" />
-                                    <p className="font-bold">Sube tu Identificación Oficial</p>
-                                    <p className="text-xs text-slate-500 mt-2">Formatos aceptados: JPG, PNG, PDF (Máx 5MB)</p>
-                                </div>
+                                <label className={`border-2 border-dashed ${idFile ? 'border-green-500/50 bg-green-500/10' : 'border-white/10 hover:bg-white/5'} rounded-2xl p-12 text-center transition-colors cursor-pointer flex flex-col items-center relative block`}>
+                                    <input
+                                        type="file"
+                                        accept="image/jpeg, image/png, application/pdf"
+                                        className="hidden"
+                                        onChange={(e) => setIdFile(e.target.files?.[0] || null)}
+                                    />
+                                    {idFile ? (
+                                        <>
+                                            <FileCheck className="w-12 h-12 text-green-500 mb-4" />
+                                            <p className="font-bold text-green-400">Documento Listo</p>
+                                            <p className="text-xs text-slate-400 mt-2">{idFile.name}</p>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Upload className="w-12 h-12 text-blue-500 mb-4" />
+                                            <p className="font-bold">Sube tu Identificación Oficial (Obligatorio)</p>
+                                            <p className="text-xs text-slate-500 mt-2">Formatos aceptados: JPG, PNG, PDF (Máx 5MB)</p>
+                                        </>
+                                    )}
+                                </label>
                                 <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-start gap-3">
                                     <ShieldCheck className="w-5 h-5 text-blue-500 flex-shrink-0" />
                                     <p className="text-xs text-blue-200">
