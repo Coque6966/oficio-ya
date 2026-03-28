@@ -25,7 +25,7 @@ export const Hero = () => {
 
             <div className="container relative z-10 mx-auto px-4 text-center">
                 <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-6 tracking-tight animate-in fade-in slide-in-from-bottom-8 duration-700">
-                    Encuentra el <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-blue-500 to-indigo-500">experto ideal</span> <br /> para tu hogar [DEPLOY#1].
+                    Encuentra el <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-blue-500 to-indigo-500">experto ideal</span> <br /> para tu hogar hoy.
                 </h1>
                 <p className="text-xl md:text-2xl text-slate-300 mb-10 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-6 duration-700 delay-200">
                     Plomeros, electricistas, niñeras y más. Con reseñas reales y agendamiento instantáneo.
