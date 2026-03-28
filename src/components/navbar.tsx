@@ -20,6 +20,7 @@ export const Navbar = () => {
                     />
                     <span className="text-2xl font-black text-white tracking-tighter">
                         Oficio<span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">Ya</span>
+                        <span className="text-[8px] text-blue-500/50 uppercase ml-1 align-top">v1.2 Premium</span>
                     </span>
                 </Link>
 
