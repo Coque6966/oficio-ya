@@ -1,0 +1,139 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          String    @default("CLIENT") // Enum: CLIENT, PROVIDER, ADMIN
+  phone         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // For Providers
+  profile       ProviderProfile?
+  
+  // For Clients & Providers
+  bookingsAsClient    Booking[] @relation("ClientBookings")
+  bookingsAsProvider  Booking[] @relation("ProviderBookings")
+  
+  reviewsSent     Review[]  @relation("SentReviews")
+  
+  sentMessages     Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
+}
+
+model ProviderProfile {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  bio             String?  
+  videoUrl        String?
+  hourlyRate      Float?
+  isVerified      Boolean  @default(false)
+  
+  // Location
+  address         String?
+  latitude        Float?
+  longitude       Float?
+  city            String?
+  state           String?
+  
+  // Subscriptions
+  subscriptionTier String           @default("NONE") // Enum: BASIC, PRO, NONE
+  stripeCustomerId String?          
+  
+  // Relations
+  categories      ServiceCategory[]
+  reviews         Review[]
+  rating          Float             @default(0)
+  reviewCount     Int               @default(0)
+  
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+}
+
+model ServiceCategory {
+  id          String            @id @default(uuid())
+  name        String            @unique
+  slug        String            @unique
+  description String?
+  icon        String?
+  providers   ProviderProfile[]
+}
+
+model Booking {
+  id             String        @id @default(uuid())
+  clientId       String
+  client         User          @relation("ClientBookings", fields: [clientId], references: [id])
+  providerId     String
+  provider       User          @relation("ProviderBookings", fields: [providerId], references: [id])
+  
+  status         String        @default("PENDING") // Enum: PENDING, CONFIRMED, COMPLETED, CANCELLED
+  scheduledDate  DateTime
+  startTime      String        // e.g. "10:00"
+  endTime        String?       // e.g. "12:00"
+  
+  totalPrice     Float?
+  notes          String?       
+  
+  review         Review?
+  
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model Review {
+  id                String          @id @default(uuid())
+  rating            Int             // 1 to 5
+  comment           String?         
+  images            String?        // JSON string or single URL
+  
+  bookingId         String          @unique
+  booking           Booking         @relation(fields: [bookingId], references: [id])
+  
+  authorId          String
+  author            User            @relation("SentReviews", fields: [authorId], references: [id])
+  
+  providerProfileId String
+  providerProfile   ProviderProfile @relation(fields: [providerProfileId], references: [id])
+  
+  createdAt         DateTime        @default(now())
+}
+
+model Message {
+  id         String   @id @default(uuid())
+  content    String   
+  senderId   String
+  sender     User     @relation("SentMessages", fields: [senderId], references: [id])
+  receiverId String
+  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
+
+model SubscriptionRecord {
+  id               String           @id @default(uuid())
+  stripeSubId      String           @unique
+  tier             String
+  status           String           // active, trialing, past_due, canceled
+  currentPeriodEnd DateTime
+  providerProfileId String
+  
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+}

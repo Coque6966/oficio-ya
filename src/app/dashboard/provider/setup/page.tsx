@@ -1,0 +1,167 @@
+"use client";
+
+import { useState } from "react";
+import { Navbar } from "@/components/navbar";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Upload, CheckCircle2, ShieldCheck, ArrowRight, Loader2 } from "lucide-react";
+import { toast } from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+
+export default function ProviderOnboardingPage() {
+    const [step, setStep] = useState(1);
+    const [loading, setLoading] = useState(false);
+    const [formData, setFormData] = useState({
+        bio: "",
+        hourlyRate: "",
+        city: "Ciudad de México",
+        latitude: "19.4326",
+        longitude: "-99.1332",
+    });
+    const router = useRouter();
+
+    const onSubmit = async () => {
+        try {
+            setLoading(true);
+            await axios.post("/api/provider/onboarding", formData);
+            toast.success("¡Perfil enviado para revisión!");
+            router.push("/dashboard/provider");
+            router.refresh();
+        } catch (error) {
+            toast.error("Error al guardar perfil");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const nextStep = () => {
+        if (step < 3) setStep(step + 1);
+        else onSubmit();
+    };
+
+    return (
+        <main className="min-h-screen bg-slate-950 text-white">
+            <Navbar />
+
+            <div className="pt-32 pb-20 container mx-auto px-4 max-w-2xl">
+                {/* Progress bar */}
+                <div className="flex gap-2 mb-12">
+                    {[1, 2, 3].map((s) => (
+                        <div
+                            key={s}
+                            className={`h-1 flex-1 rounded-full transition-all ${s <= step ? "bg-blue-600" : "bg-white/10"}`}
+                        />
+                    ))}
+                </div>
+
+                <Card className="bg-white/5 border-white/10 shadow-2xl">
+                    <CardHeader className="text-center">
+                        {step === 1 && (
+                            <>
+                                <CardTitle className="text-3xl font-black">Información Básica</CardTitle>
+                                <CardDescription className="text-slate-400">Cuéntanos un poco sobre tu experiencia y tarifas.</CardDescription>
+                            </>
+                        )}
+                        {step === 2 && (
+                            <>
+                                <CardTitle className="text-3xl font-black">Verificación de Identidad</CardTitle>
+                                <CardDescription className="text-slate-400">Sube una foto de tu INE o Pasaporte para validar tu perfil.</CardDescription>
+                            </>
+                        )}
+                        {step === 3 && (
+                            <>
+                                <CardTitle className="text-3xl font-black">Zonas de Cobertura</CardTitle>
+                                <CardDescription className="text-slate-400">Selecciona las ciudades y colonias donde trabajas.</CardDescription>
+                            </>
+                        )}
+                    </CardHeader>
+
+                    <CardContent className="p-8 space-y-6">
+                        {step === 1 && (
+                            <div className="space-y-4">
+                                <div className="space-y-2">
+                                    <label className="text-sm font-bold text-slate-300">Biografía Profesional</label>
+                                    <Textarea
+                                        value={formData.bio}
+                                        onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                                        placeholder="Describe tu experiencia, herramientas y especialidades..."
+                                        className="bg-white/5 border-white/10 text-white min-h-[120px]"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-sm font-bold text-slate-300">Tarifa por Hora (MXN)</label>
+                                    <div className="relative">
+                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">$</span>
+                                        <Input
+                                            value={formData.hourlyRate}
+                                            onChange={(e) => setFormData({ ...formData, hourlyRate: e.target.value })}
+                                            type="number" placeholder="Ej. 350" className="bg-white/5 border-white/10 text-white pl-8"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {step === 2 && (
+                            <div className="space-y-6">
+                                <div className="border-2 border-dashed border-white/10 rounded-2xl p-12 text-center hover:bg-white/5 transition-colors cursor-pointer flex flex-col items-center">
+                                    <Upload className="w-12 h-12 text-blue-500 mb-4" />
+                                    <p className="font-bold">Sube tu Identificación Oficial</p>
+                                    <p className="text-xs text-slate-500 mt-2">Formatos aceptados: JPG, PNG, PDF (Máx 5MB)</p>
+                                </div>
+                                <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-start gap-3">
+                                    <ShieldCheck className="w-5 h-5 text-blue-500 flex-shrink-0" />
+                                    <p className="text-xs text-blue-200">
+                                        Tu información está encriptada y solo se usará para procesos de seguridad interna.
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+
+                        {step === 3 && (
+                            <div className="space-y-4">
+                                <div className="space-y-2">
+                                    <label className="text-sm font-bold text-slate-300">Ciudad Principal</label>
+                                    <Input
+                                        value={formData.city}
+                                        onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                                        placeholder="Ciudad de México" className="bg-white/5 border-white/10 text-white"
+                                    />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-slate-300">Latitud</label>
+                                        <Input placeholder="19.4326" className="bg-white/5 border-white/10 text-white" disabled />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-slate-300">Longitud</label>
+                                        <Input placeholder="-99.1332" className="bg-white/5 border-white/10 text-white" disabled />
+                                    </div>
+                                </div>
+                                <p className="text-[10px] text-slate-500 italic">Usamos tu ubicación para mostrarte a clientes cercanos.</p>
+                            </div>
+                        )}
+
+                        <Button
+                            disabled={loading}
+                            onClick={nextStep}
+                            className="w-full h-12 bg-blue-600 hover:bg-blue-700 font-bold rounded-xl flex items-center justify-center gap-2"
+                        >
+                            {loading ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                                <>
+                                    {step === 3 ? "Finalizar Registro" : "Continuar"} <ArrowRight className="w-4 h-4" />
+                                </>
+                            )}
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
+        </main>
+    );
+}
