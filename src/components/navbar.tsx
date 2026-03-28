@@ -26,7 +26,7 @@ export const Navbar = () => {
                 {/* Navigation Links (Desktop) */}
                 <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
                     <Link href="/search" className="hover:text-blue-500 transition-colors">Explorar</Link>
-                    <Link href="/pricing" className="hover:text-blue-500 transition-colors">Soy Profesional</Link>
+                    <Link href="/dashboard/provider/setup" className="hover:text-blue-500 transition-colors">Soy Profesional</Link>
                     <Link href="/help" className="hover:text-blue-500 transition-colors">Ayuda</Link>
                 </div>
 

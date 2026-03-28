@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { DollarSign, Users, CalendarCheck, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export default async function ProviderDashboard() {
     const { userId } = await auth();
@@ -16,6 +18,11 @@ export default async function ProviderDashboard() {
             categories: true,
         }
     });
+
+    // Auto-heal: If profile doesn't exist yet but they reached here, force them to finish setup
+    if (!profile) {
+        redirect("/dashboard/provider/setup");
+    }
 
     const bookings = await db.booking.findMany({
         where: { providerId: userId as string },
@@ -102,9 +109,11 @@ export default async function ProviderDashboard() {
                                 <p className="text-sm text-blue-100 mb-6">
                                     Los profesionales con plan **Premium** aparecen primero en las búsquedas y reciben 3x más solicitudes.
                                 </p>
-                                <Button className="w-full bg-white text-blue-600 font-bold hover:bg-slate-100 border-none">
-                                    Ver Planes Premium
-                                </Button>
+                                <Link href="/pricing" className="block w-full">
+                                    <Button className="w-full bg-white text-blue-600 font-bold hover:bg-slate-100 border-none">
+                                        Ver Planes Premium
+                                    </Button>
+                                </Link>
                             </CardContent>
                         </Card>
                     </div>

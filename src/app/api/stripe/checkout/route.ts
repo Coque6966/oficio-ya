@@ -20,7 +20,20 @@ export async function POST(req: Request) {
         });
 
         if (!providerProfile) {
-            return new NextResponse("Perfil de proveedor no encontrado", { status: 404 });
+            // Auto-heal limbo accounts: gracefully send them back to setup instead of a 404 block
+            const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
+            return NextResponse.json({ url: `${baseUrl}/dashboard/provider/setup` });
+        }
+
+        // Bypass Stripe if the plan is free
+        if (tier === "NONE") {
+            await db.providerProfile.update({
+                where: { userId },
+                data: { subscriptionTier: "NONE" },
+            });
+            // Return relative or absolute URL for the client to redirect
+            const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
+            return NextResponse.json({ url: `${baseUrl}/dashboard/provider?success=1` });
         }
 
         // Check if user already has a customer ID

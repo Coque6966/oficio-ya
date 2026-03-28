@@ -32,13 +32,15 @@ import { MobileNav } from "@/components/mobile-nav";
 import { PWAProvider } from "@/components/pwa-provider";
 import { SplashScreen } from "@/components/splash-screen";
 
+import { esES } from "@clerk/localizations";
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider localization={esES}>
       <html lang="es" className="dark">
         <body className={inter.className}>
           <PWAProvider>

@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
+import { syncUser } from "@/lib/sync-user";
 import { Navbar } from "@/components/navbar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +9,9 @@ import { Calendar, Clock, MapPin } from "lucide-react";
 
 export default async function ClientDashboard() {
     const { userId } = await auth();
+
+    // Sync user on dashboard load
+    await syncUser();
 
     const bookings = await db.booking.findMany({
         where: { clientId: userId as string },
