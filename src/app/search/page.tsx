@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { SearchInput } from "@/components/search-input";
 import { CategoryFilters } from "@/components/category-filters";
 import { ProviderCard } from "@/components/provider-card";
+import { CategoryGrid } from "@/components/category-grid";
 
 interface SearchPageProps {
     searchParams: Promise<{
@@ -110,17 +111,29 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                             <SearchInput defaultValue={query} />
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {providers.length > 0 ? (
-                                providers.map((provider: any) => (
-                                    <ProviderCard key={provider.id} provider={provider} />
-                                ))
-                            ) : (
-                                <div className="col-span-full py-20 text-center">
-                                    <p className="text-slate-500 text-lg">No se encontraron profesionales con esos criterios.</p>
+                        {!categorySlug && !query && (
+                            <div className="space-y-6">
+                                <div className="flex flex-col gap-2">
+                                    <h2 className="text-2xl font-black text-slate-900 italic tracking-tighter uppercase">Explorar Servicios</h2>
+                                    <p className="text-slate-500">Selecciona una categoría para encontrar los mejores profesionales cerca de ti.</p>
                                 </div>
-                            )}
-                        </div>
+                                <CategoryGrid categories={categories} />
+                            </div>
+                        )}
+
+                        {(categorySlug || query) && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {providers.length > 0 ? (
+                                    providers.map((provider: any) => (
+                                        <ProviderCard key={provider.id} provider={provider} />
+                                    ))
+                                ) : (
+                                    <div className="col-span-full py-20 text-center bg-white rounded-3xl border border-dashed border-slate-200">
+                                        <p className="text-slate-500 text-lg">No se encontraron profesionales con esos criterios.</p>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

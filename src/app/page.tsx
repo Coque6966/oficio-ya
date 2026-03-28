@@ -3,6 +3,7 @@ import { Navbar } from "@/components/navbar";
 import { db } from "@/lib/db";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import * as Icons from "lucide-react";
 
@@ -16,12 +17,13 @@ export default async function Home() {
 
       {/* Categories Section */}
       <section className="py-20 container mx-auto px-4">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-bold mb-4">¿Qué podemos hacer por ti?</h2>
-          <p className="text-slate-400 text-lg">Busca por categorías y encuentra al mejor profesional.</p>
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <Badge className="mb-4 bg-blue-500/10 text-blue-500 border-none px-4 py-1 uppercase tracking-widest font-black text-[10px]">Directorio de Confianza</Badge>
+          <h2 className="text-4xl md:text-6xl font-black mb-6 tracking-tighter uppercase italic leading-none">¿Qué servicio <span className="text-blue-500">buscas hoy?</span></h2>
+          <p className="text-slate-400 text-lg md:text-xl font-medium">La red de profesionales más grande y segura de México. Agenda hoy mismo.</p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
           {categories.map((category: any) => {
             // @ts-ignore
             const Icon = Icons[category.icon || "Wrench"];
@@ -29,20 +31,36 @@ export default async function Home() {
               <Link
                 key={category.id}
                 href={`/search?category=${category.slug}`}
-                className="group"
+                className="group relative"
               >
-                <Card className="bg-white/5 border-white/10 group-hover:bg-white/10 group-hover:border-blue-500/50 transition-all duration-300 overflow-hidden relative">
-                  <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <CardContent className="p-6 flex flex-col items-center justify-center text-center">
-                    <div className="p-4 bg-blue-500/10 rounded-2xl mb-4 group-hover:scale-110 group-hover:bg-blue-500/20 transition-all">
-                      {Icon && <Icon className="w-8 h-8 text-blue-500" />}
+                <Card className="bg-white/[0.03] border-white/5 group-hover:bg-blue-600 group-hover:border-blue-500 transition-all duration-300 overflow-hidden h-40 flex items-center justify-center">
+                  <CardContent className="p-0 flex flex-col items-center justify-center text-center">
+                    <div className="p-3 bg-white/5 rounded-2xl mb-3 group-hover:bg-white/20 transition-all">
+                      {Icon && <Icon className="w-8 h-8 text-blue-500 group-hover:text-white" />}
                     </div>
-                    <h3 className="font-bold text-slate-200 group-hover:text-white">{category.name}</h3>
+                    <h3 className="font-black text-xs uppercase tracking-widest text-slate-400 group-hover:text-white">{category.name}</h3>
                   </CardContent>
                 </Card>
               </Link>
             );
           })}
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 container mx-auto px-4">
+        <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-[3rem] p-12 md:p-20 text-center relative overflow-hidden shadow-2xl shadow-blue-500/20">
+          <div className="relative z-10 flex flex-col items-center max-w-2xl mx-auto">
+            <h2 className="text-4xl md:text-5xl font-black text-white uppercase italic tracking-tighter mb-6 leading-none">¿Eres un experto en tu oficio?</h2>
+            <p className="text-blue-100 text-xl mb-10 font-medium">Únete a la plataforma que está cambiando la forma de trabajar en México. Más clientes, más seguridad, más ganancias.</p>
+            <Link href="/dashboard/provider/setup">
+              <Button size="lg" className="bg-white text-blue-600 hover:bg-slate-100 font-black uppercase italic px-10 h-16 text-lg rounded-2xl shadow-xl shadow-black/10">
+                Empezar Ahora <Icons.ArrowRight className="ml-2 w-6 h-6" />
+              </Button>
+            </Link>
+          </div>
+          <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-96 h-96 bg-black/10 rounded-full blur-3xl" />
         </div>
       </section>
 

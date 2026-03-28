@@ -74,6 +74,15 @@ export default function HelpPage() {
                             </AccordionItem>
                         </Accordion>
                     </section>
+
+                    <section className="mt-12 p-8 rounded-3xl bg-blue-600/10 border border-blue-500/20 text-center">
+                        <h2 className="text-2xl font-black text-white uppercase italic mb-2">Soporte Directo</h2>
+                        <p className="text-slate-400 mb-6 font-medium">Si tienes una emergencia o duda técnica, contacta al propietario:</p>
+                        <div className="space-y-2">
+                            <p className="text-xl font-bold text-blue-400 tracking-tighter uppercase">Jorge Arturo Rodriguez Araujo</p>
+                            <a href="tel:4462322001" className="text-3xl font-black text-white hover:text-blue-500 transition-colors">446 232 2001</a>
+                        </div>
+                    </section>
                 </div>
             </div>
         </main>
