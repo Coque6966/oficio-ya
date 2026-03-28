@@ -13,14 +13,14 @@ export async function POST(req: Request) {
         }
         const { userId } = await auth();
         const body = await req.json();
-        const { providerId, date, time, notes } = body;
+        const { providerId, date, time, notes, state, address, zipCode, latitude, longitude } = body;
 
         if (!userId) {
             return new NextResponse("No autorizado", { status: 401 });
         }
 
-        if (!providerId || !date || !time) {
-            return new NextResponse("Faltan datos", { status: 400 });
+        if (!providerId || !date || !time || !address || !state || !zipCode) {
+            return new NextResponse("Faltan datos de ubicación o fecha", { status: 400 });
         }
 
         // Sync user to ensure client exists in Prisma
@@ -58,6 +58,11 @@ export async function POST(req: Request) {
                 scheduledDate: new Date(date),
                 startTime: time,
                 notes: notes,
+                state: state,
+                address: address,
+                zipCode: zipCode,
+                latitude: latitude,
+                longitude: longitude,
                 status: "PENDING",
             },
         });

@@ -7,7 +7,7 @@ export async function POST(req: Request) {
     try {
         const { userId } = await auth();
         const body = await req.json();
-        const { bio, hourlyRate, city, latitude, longitude } = body;
+        const { bio, hourlyRate, city, state, address, zipCode, latitude, longitude } = body;
 
         if (!userId) {
             return new NextResponse("No autorizado", { status: 401 });
@@ -36,6 +36,9 @@ export async function POST(req: Request) {
                 bio: bio || null,
                 hourlyRate: safeRate,
                 city: city || "Local",
+                state: state || null,
+                address: address || null,
+                zipCode: zipCode || null,
                 latitude: safeLat,
                 longitude: safeLng,
             },
@@ -44,6 +47,9 @@ export async function POST(req: Request) {
                 bio: bio || null,
                 hourlyRate: safeRate,
                 city: city || "Local",
+                state: state || null,
+                address: address || null,
+                zipCode: zipCode || null,
                 latitude: safeLat,
                 longitude: safeLng,
             }

@@ -51,6 +51,7 @@ model ProviderProfile {
   longitude       Float?
   city            String?
   state           String?
+  zipCode         String?
   
   // Subscriptions
   subscriptionTier String           @default("NONE") // Enum: BASIC, PRO, NONE
@@ -89,6 +90,13 @@ model Booking {
   
   totalPrice     Float?
   notes          String?       
+  
+  // Location of Service
+  address        String?
+  state          String?
+  zipCode        String?
+  latitude       Float?
+  longitude      Float?
   
   review         Review?
   

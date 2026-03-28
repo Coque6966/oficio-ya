@@ -7,19 +7,31 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Upload, CheckCircle2, ShieldCheck, ArrowRight, Loader2, FileCheck } from "lucide-react";
+import { Upload, CheckCircle2, ShieldCheck, ArrowRight, Loader2, FileCheck, ScanLine } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import Tesseract from "tesseract.js";
+import dynamic from "next/dynamic";
+
+// Dynamically import the map to avoid SSR window errors
+const LocationPickerMap = dynamic(
+    () => import("../../../../components/map/location-picker").then((mod) => mod.LocationPickerMap),
+    { ssr: false, loading: () => <div className="h-[300px] w-full animate-pulse bg-slate-800 rounded-xl" /> }
+);
 
 export default function ProviderOnboardingPage() {
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
+    const [scanningId, setScanningId] = useState(false);
     const [idFile, setIdFile] = useState<File | null>(null);
     const [formData, setFormData] = useState({
         bio: "",
         hourlyRate: "",
         city: "Ciudad de México",
+        state: "",
+        address: "",
+        zipCode: "",
         latitude: "19.4326",
         longitude: "-99.1332",
     });
@@ -144,24 +156,54 @@ export default function ProviderOnboardingPage() {
                         )}
 
                         {step === 3 && (
-                            <div className="space-y-4">
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-slate-300">Ciudad Principal</label>
-                                    <Input
-                                        value={formData.city}
-                                        onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                                        placeholder="Ciudad de México" className="bg-white/5 border-white/10 text-white"
-                                    />
-                                </div>
+                            <div className="space-y-6">
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <label className="text-sm font-bold text-slate-300">Latitud</label>
-                                        <Input placeholder="19.4326" className="bg-white/5 border-white/10 text-white" disabled />
+                                        <label className="text-sm font-bold text-slate-300">Estado</label>
+                                        <Input
+                                            value={formData.state}
+                                            onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                                            placeholder="Ej. Chihuahua" className="bg-white/5 border-white/10 text-white"
+                                        />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-sm font-bold text-slate-300">Longitud</label>
-                                        <Input placeholder="-99.1332" className="bg-white/5 border-white/10 text-white" disabled />
+                                        <label className="text-sm font-bold text-slate-300">Ciudad Principal</label>
+                                        <Input
+                                            value={formData.city}
+                                            onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                                            placeholder="Ciudad de México" className="bg-white/5 border-white/10 text-white"
+                                        />
                                     </div>
+                                </div>
+
+                                <div className="grid grid-cols-[2fr_1fr] gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-slate-300">Dirección Exacta</label>
+                                        <Input
+                                            value={formData.address}
+                                            onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                                            placeholder="Calle y Número, Colonia" className="bg-white/5 border-white/10 text-white"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-slate-300">Código Postal</label>
+                                        <Input
+                                            value={formData.zipCode}
+                                            onChange={(e) => setFormData({ ...formData, zipCode: e.target.value })}
+                                            placeholder="00000" className="bg-white/5 border-white/10 text-white"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-sm font-bold text-slate-300 flex justify-between">
+                                        <span>Tu Ubicación en el Mapa</span>
+                                        <span className="text-blue-500 font-normal">Mueve el mapa para ser preciso</span>
+                                    </label>
+                                    <LocationPickerMap
+                                        defaultLocation={[19.4326, -99.1332]}
+                                        onChange={({ lat, lng }) => setFormData({ ...formData, latitude: lat.toString(), longitude: lng.toString() })}
+                                    />
                                 </div>
                                 <p className="text-[10px] text-slate-500 italic">Usamos tu ubicación para mostrarte a clientes cercanos.</p>
                             </div>
