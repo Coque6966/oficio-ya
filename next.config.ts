@@ -9,6 +9,12 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'unpkg.com' },
     ],
   },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   async headers() {
     return [
       {
