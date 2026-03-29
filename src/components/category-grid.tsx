@@ -35,14 +35,14 @@ export const CategoryGrid = ({ categories }: CategoryGridProps) => {
                 return (
                     <Card
                         key={category.id}
-                        className="group cursor-pointer hover:border-blue-500 hover:shadow-md transition-all border-slate-200"
+                        className="group cursor-pointer hover:border-blue-500 hover:shadow-md transition-all border-border bg-card"
                         onClick={() => onClick(category.slug)}
                     >
                         <CardContent className="p-6 flex flex-col items-center justify-center text-center space-y-3">
-                            <div className="p-3 rounded-2xl bg-blue-50 group-hover:bg-blue-600 transition-colors">
+                            <div className="p-3 rounded-2xl bg-blue-500/10 group-hover:bg-blue-600 transition-colors">
                                 {Icon && <Icon className="w-8 h-8 text-blue-600 group-hover:text-white transition-colors" />}
                             </div>
-                            <span className="font-bold text-slate-800 text-sm">{category.name}</span>
+                            <span className="font-bold text-foreground text-sm">{category.name}</span>
                         </CardContent>
                     </Card>
                 );

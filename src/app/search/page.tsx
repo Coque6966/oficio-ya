@@ -92,7 +92,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     });
 
     return (
-        <main className="min-h-screen bg-slate-50">
+        <main className="min-h-screen bg-background">
             <Navbar />
 
             <div className="pt-24 pb-12 container mx-auto px-4">
@@ -107,15 +107,15 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
                     {/* Search Results */}
                     <div className="flex-1 space-y-6">
-                        <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                        <div className="bg-card p-4 rounded-xl shadow-sm border border-border">
                             <SearchInput defaultValue={query} />
                         </div>
 
                         {!categorySlug && !query && (
                             <div className="space-y-6">
                                 <div className="flex flex-col gap-2">
-                                    <h2 className="text-2xl font-black text-slate-900 italic tracking-tighter uppercase">Explorar Servicios</h2>
-                                    <p className="text-slate-500">Selecciona una categoría para encontrar los mejores profesionales cerca de ti.</p>
+                                    <h2 className="text-2xl font-black text-foreground italic tracking-tighter uppercase">Explorar Servicios</h2>
+                                    <p className="text-muted-foreground">Selecciona una categoría para encontrar los mejores profesionales cerca de ti.</p>
                                 </div>
                                 <CategoryGrid categories={categories} />
                             </div>
@@ -128,8 +128,8 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                                         <ProviderCard key={provider.id} provider={provider} />
                                     ))
                                 ) : (
-                                    <div className="col-span-full py-20 text-center bg-white rounded-3xl border border-dashed border-slate-200">
-                                        <p className="text-slate-500 text-lg">No se encontraron profesionales con esos criterios.</p>
+                                    <div className="col-span-full py-20 text-center bg-card rounded-3xl border border-dashed border-border">
+                                        <p className="text-muted-foreground text-lg">No se encontraron profesionales con esos criterios.</p>
                                     </div>
                                 )}
                             </div>

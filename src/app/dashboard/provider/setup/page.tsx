@@ -13,6 +13,8 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import Tesseract from "tesseract.js";
 import dynamic from "next/dynamic";
+import { FaceDetection } from "@/components/face-detection";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 // Dynamically import the map to avoid SSR window errors
 const LocationPickerMap = dynamic(
@@ -25,6 +27,7 @@ export default function ProviderOnboardingPage() {
     const [loading, setLoading] = useState(false);
     const [scanningId, setScanningId] = useState(false);
     const [idFile, setIdFile] = useState<File | null>(null);
+    const [profileFile, setProfileFile] = useState<File | null>(null);
     const [formData, setFormData] = useState({
         bio: "",
         hourlyRate: "",
@@ -52,8 +55,12 @@ export default function ProviderOnboardingPage() {
     };
 
     const nextStep = () => {
+        if (step === 1 && !profileFile) {
+            toast.error("Seguridad Biométrica: Debes escanear tu rostro para crear el perfil.");
+            return;
+        }
         if (step === 2 && !idFile) {
-            toast.error("Seguridad: Es OBLIGATORIO anexar tu Identificación Oficial para continuar.");
+            toast.error("Seguridad: Es OBLIGATORIO escanear tu Identificación Oficial para continuar.");
             return;
         }
         if (step < 3) setStep(step + 1);
@@ -99,7 +106,15 @@ export default function ProviderOnboardingPage() {
 
                     <CardContent className="p-8 space-y-6">
                         {step === 1 && (
-                            <div className="space-y-4">
+                            <>
+                                <div className="space-y-4">
+                                    <label className="text-sm font-bold text-slate-300">Foto de Perfil Biométrica</label>
+                                    <FaceDetection
+                                        label="Escaneo de Rostro Obligatorio"
+                                        onCapture={(file) => setProfileFile(file)}
+                                    />
+                                    <p className="text-[10px] text-slate-500 text-center italic">Este escaneo valida que eres una persona real.</p>
+                                </div>
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-slate-300">Biografía Profesional</label>
                                     <Textarea
@@ -120,36 +135,19 @@ export default function ProviderOnboardingPage() {
                                         />
                                     </div>
                                 </div>
-                            </div>
+                            </>
                         )}
 
                         {step === 2 && (
                             <div className="space-y-6">
-                                <label className={`border-2 border-dashed ${idFile ? 'border-green-500/50 bg-green-500/10' : 'border-white/10 hover:bg-white/5'} rounded-2xl p-12 text-center transition-colors cursor-pointer flex flex-col items-center relative block`}>
-                                    <input
-                                        type="file"
-                                        accept="image/jpeg, image/png, application/pdf"
-                                        className="hidden"
-                                        onChange={(e) => setIdFile(e.target.files?.[0] || null)}
-                                    />
-                                    {idFile ? (
-                                        <>
-                                            <FileCheck className="w-12 h-12 text-green-500 mb-4" />
-                                            <p className="font-bold text-green-400">Documento Listo</p>
-                                            <p className="text-xs text-slate-400 mt-2">{idFile.name}</p>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Upload className="w-12 h-12 text-blue-500 mb-4" />
-                                            <p className="font-bold">Sube tu Identificación Oficial (Obligatorio)</p>
-                                            <p className="text-xs text-slate-500 mt-2">Formatos aceptados: JPG, PNG, PDF (Máx 5MB)</p>
-                                        </>
-                                    )}
-                                </label>
+                                <FaceDetection
+                                    label="Escanear INE / Pasaporte Original"
+                                    onCapture={(file) => setIdFile(file)}
+                                />
                                 <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-start gap-3">
                                     <ShieldCheck className="w-5 h-5 text-blue-500 flex-shrink-0" />
                                     <p className="text-xs text-blue-200">
-                                        Tu información está encriptada y solo se usará para procesos de seguridad interna.
+                                        Nuestro sistema valida la autenticidad de tu identificación en tiempo real. No se aceptan fotocopias.
                                     </p>
                                 </div>
                             </div>
@@ -225,6 +223,6 @@ export default function ProviderOnboardingPage() {
                     </CardContent>
                 </Card>
             </div>
-        </main>
+        </main >
     );
 }
