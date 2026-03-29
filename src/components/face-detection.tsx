@@ -9,9 +9,10 @@ import { toast } from "react-hot-toast";
 interface FaceDetectionProps {
     onCapture: (file: File) => void;
     label: string;
+    mode?: "face" | "document";
 }
 
-export const FaceDetection = ({ onCapture, label }: FaceDetectionProps) => {
+export const FaceDetection = ({ onCapture, label, mode = "face" }: FaceDetectionProps) => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [stream, setStream] = useState<MediaStream | null>(null);
@@ -108,10 +109,18 @@ export const FaceDetection = ({ onCapture, label }: FaceDetectionProps) => {
                         />
                         <canvas ref={canvasRef} className="hidden" />
 
-                        <div className="absolute inset-0 border-[40px] border-black/40 pointer-events-none">
-                            <div className="w-full h-full border-2 border-blue-500/50 rounded-[20%] relative">
-                                <ScanLine className="absolute top-0 left-0 w-full text-blue-500 opacity-50 animate-bounce" />
-                            </div>
+                        <div className="absolute inset-0 border-[40px] border-black/60 pointer-events-none">
+                            {mode === "face" ? (
+                                <div className="w-[280px] h-[350px] border-2 border-blue-500 rounded-full mx-auto mt-10 relative overflow-hidden">
+                                    <div className="absolute inset-0 bg-blue-500/10" />
+                                    <ScanLine className="absolute top-0 left-0 w-full text-blue-500 opacity-50 animate-bounce" />
+                                </div>
+                            ) : (
+                                <div className="w-[320px] h-[200px] border-2 border-blue-500 rounded-xl mx-auto mt-24 relative overflow-hidden">
+                                    <div className="absolute inset-0 bg-blue-400/10" />
+                                    <ScanLine className="absolute top-0 left-0 w-full text-blue-500 opacity-50 animate-bounce" />
+                                </div>
+                            )}
                         </div>
 
                         <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-4 px-4">
@@ -121,7 +130,7 @@ export const FaceDetection = ({ onCapture, label }: FaceDetectionProps) => {
                                 className="bg-blue-600 hover:bg-blue-700 font-bold px-8 rounded-full shadow-lg"
                             >
                                 {isProcessing ? <Loader2 className="animate-spin mr-2" /> : <Camera className="mr-2" />}
-                                Escanear Rostro
+                                {mode === "face" ? "Escanear Rostro" : "Escanear Documento"}
                             </Button>
                             <Button
                                 variant="destructive"
@@ -134,7 +143,7 @@ export const FaceDetection = ({ onCapture, label }: FaceDetectionProps) => {
 
                         <div className="absolute top-4 left-4 right-4 text-center">
                             <Badge className="bg-blue-500 text-white animate-pulse">
-                                Alinea tu rostro con el marco
+                                {mode === "face" ? "Alinea tu rostro con el círculo" : "Alinea el documento con el rectángulo"}
                             </Badge>
                         </div>
                     </div>
@@ -154,7 +163,9 @@ export const FaceDetection = ({ onCapture, label }: FaceDetectionProps) => {
                         </div>
                         <div className="absolute bottom-4 left-4 flex items-center gap-2 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-green-500/50">
                             <CheckCircle2 className="w-4 h-4 text-green-500" />
-                            <span className="text-[10px] font-black uppercase text-green-400">Verificado Biométricamente</span>
+                            <span className="text-[10px] font-black uppercase text-green-400">
+                                {mode === "face" ? "Identidad Verificada" : "Documento Validado"}
+                            </span>
                         </div>
                     </div>
                 )}

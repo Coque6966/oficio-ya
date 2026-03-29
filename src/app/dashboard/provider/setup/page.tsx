@@ -110,6 +110,7 @@ export default function ProviderOnboardingPage() {
                                 <div className="space-y-4">
                                     <label className="text-sm font-bold text-slate-300">Foto de Perfil Biométrica</label>
                                     <FaceDetection
+                                        mode="face"
                                         label="Escaneo de Rostro Obligatorio"
                                         onCapture={(file) => setProfileFile(file)}
                                     />
@@ -141,6 +142,7 @@ export default function ProviderOnboardingPage() {
                         {step === 2 && (
                             <div className="space-y-6">
                                 <FaceDetection
+                                    mode="document"
                                     label="Escanear INE / Pasaporte Original"
                                     onCapture={(file) => setIdFile(file)}
                                 />
