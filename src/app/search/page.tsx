@@ -97,13 +97,15 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
             <div className="pt-24 pb-12 container mx-auto px-4">
                 <div className="flex flex-col md:row gap-8">
-                    {/* Sidebar Filters */}
-                    <aside className="w-full md:w-64 space-y-8">
-                        <CategoryFilters
-                            categories={categories}
-                            activeCategory={categorySlug}
-                        />
-                    </aside>
+                    {/* Sidebar Filters - Hidden in 'Explore' mode for a cleaner look */}
+                    {(categorySlug || query) && (
+                        <aside className="w-full md:w-64 space-y-8 animate-in fade-in slide-in-from-left-4 duration-500">
+                            <CategoryFilters
+                                categories={categories}
+                                activeCategory={categorySlug}
+                            />
+                        </aside>
+                    )}
 
                     {/* Search Results */}
                     <div className="flex-1 space-y-6">
@@ -113,11 +115,15 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
                         {!categorySlug && !query && (
                             <div className="space-y-6">
-                                <div className="flex flex-col gap-2">
-                                    <h2 className="text-2xl font-black text-foreground italic tracking-tighter uppercase">Explorar Servicios</h2>
-                                    <p className="text-muted-foreground">Selecciona una categoría para encontrar los mejores profesionales cerca de ti.</p>
+                                <div className="flex flex-col gap-2 text-center mb-10">
+                                    <h2 className="text-4xl md:text-5xl font-black text-foreground italic tracking-tighter uppercase leading-none">
+                                        Explora nuestros <span className="text-blue-600">Servicios</span>
+                                    </h2>
+                                    <p className="text-muted-foreground text-lg">Encuentra al profesional perfecto para tu hogar con un solo clic.</p>
                                 </div>
-                                <CategoryGrid categories={categories} />
+                                <div className="max-w-5xl mx-auto">
+                                    <CategoryGrid categories={categories} />
+                                </div>
                             </div>
                         )}
 
